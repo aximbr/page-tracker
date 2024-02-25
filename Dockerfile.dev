@@ -1,5 +1,5 @@
 # Dockerfile.dev
-FROM python:3.11.2-slim-bullseye
+FROM python:3.11.2-slim-bullseye AS builder
 
 RUN apt-get update && \
     apt-get upgrade --yes
@@ -25,8 +25,7 @@ RUN python -m pip install . -c constraints.txt && \
     python -m isort src/ --check && \
     python -m black src/ --check --quiet && \
     python -m pylint src/ --disable=C0114,C0116,R1705 && \
-    python -m bandit -r src/ --quiet
+    python -m bandit -r src/ --quiet &&\
+    python -m pip wheel --wheel-dir dist/ . -c constraints.txt
 
-CMD ["flask", "--app", "page_tracker.app", "run", \
-     "--host", "0.0.0.0", "--port", "5000"]
 
